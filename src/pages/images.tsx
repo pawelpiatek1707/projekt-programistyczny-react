@@ -1,7 +1,15 @@
 
 import { Layout, Menu, Breadcrumb, Button, Modal } from 'antd';
 import { useState, useEffect } from 'react'
+import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+
+/*
+    Login data
+    login: projekt
+    hasło: programistyczny
+    basic: Basic cHJvamVrdDpwcm9ncmFtaXN0eWN6bnk=
+*/
 
 interface Response {
     image: string
@@ -13,6 +21,7 @@ const { Header, Content, Footer } = Layout;
 export const Images: React.FC = () => {
     const [images, setImages] = useState<Response[] | undefined>(undefined)
     const [modalContent, setModalContent] = useState<Response | undefined>(undefined)
+    const navigate = useNavigate()
 
     const fetchImages = async () => {
         const { data } = await axios.get<Response[]>('http://localhost:5000/images')
@@ -20,7 +29,24 @@ export const Images: React.FC = () => {
     }
 
     const deleteImage = async (image: Response) => {
+        try {
+            await axios.delete(`/images/${image.name}?q=proxy`, {
+                headers: {
+                    "access-control-allow-origin" : "*",
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            })
+        } catch (e) {
+            console.log(e)
+        } finally {
+            await fetchImages()
+            setModalContent(undefined)
+        }
+    }
 
+    const handleLogout = () => {
+        localStorage.removeItem('basic')
+        navigate('/login')
     }
 
     useEffect(() => {
@@ -40,6 +66,8 @@ export const Images: React.FC = () => {
     };
 
 
+
+
     return (
         <div className='relative'>
             <Layout className="layout">
@@ -50,17 +78,9 @@ export const Images: React.FC = () => {
                             <Menu
                                 theme="dark"
                                 mode="horizontal"
-                                defaultSelectedKeys={['2']}
-                                items={new Array(15).fill(null).map((_, index) => {
-                                    const key = index + 1;
-                                    return {
-                                        key,
-                                        label: `nav ${key}`,
-                                    };
-                                })}
                             />
-                            <div className='absolute top-1/2 right-0 trnasform -translate-y-1/2'>
-                                <Button type="primary" shape="round">Log out</Button>
+                            <div className='absolute top-1/2 right-0 trnasform -translate-y-1 mt-1'>
+                                <Button type="primary" shape="round" onClick={handleLogout}>Log out</Button>
                             </div>
                         </div>
                     </Header>
@@ -68,7 +88,7 @@ export const Images: React.FC = () => {
                 <div className='min-h-screen pt-20'>
                     <Content style={{ padding: '0 50px' }}>
                         <Breadcrumb style={{ margin: '16px 0' }}>
-                            <Breadcrumb.Item>Home</Breadcrumb.Item>
+                            <Breadcrumb.Item>Login</Breadcrumb.Item>
                             <Breadcrumb.Item>Images</Breadcrumb.Item>
                         </Breadcrumb>
                         <div className="site-layout-content grid grid-cols-3 gap-6 mt-10">
@@ -79,7 +99,6 @@ export const Images: React.FC = () => {
                                     </div>
 
                                 ))
-
                             )}
                         </div>
                     </Content>
@@ -89,9 +108,9 @@ export const Images: React.FC = () => {
                 </div>
             </Layout>
             <Modal title={modalContent ? `Image: ${modalContent.name}` : ''} visible={!!modalContent} onOk={handleOk} onCancel={handleCancel}>
-                <Button type="primary" danger>
+                {modalContent && <Button type="primary" danger onClick={() => deleteImage(modalContent)}>
                     Delete image
-                </Button>
+                </Button>}
             </Modal>
         </div>
 
