@@ -32,12 +32,10 @@ export const Images: React.FC = () => {
     }
 
     const deleteImage = async (image: Response) => {
+        const basic = localStorage.getItem('basic')
         try {
             await axios.delete(`/images/${image.name}?q=proxy`, {
-                headers: {
-                    "access-control-allow-origin" : "*",
-                    "Content-type": "application/json; charset=UTF-8"
-                }
+                headers: {'Authorization': 'Basic '+ basic}
             })
         } catch (e) {
             console.log(e)

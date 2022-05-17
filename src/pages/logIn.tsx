@@ -23,7 +23,7 @@ export const LogIn: React.FC = () => {
     };
 
     const onFinishFailed = (errorInfo: any) => {
-        console.log('Failed:', errorInfo);
+        alert('Error')
     };
 
     return (
