@@ -3,9 +3,10 @@ import {
   Route,
 } from "react-router-dom";
 import ReactDOM from 'react-dom/client';
-import {Home, LogIn, Images} from './pages'
+import {LogIn, Images} from './pages'
 import './index.css';
 import 'antd/dist/antd.css'
+import { ProtectedRoute } from "./components";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -14,9 +15,12 @@ const root = ReactDOM.createRoot(
 root.render(
   <BrowserRouter>
      <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="login" element={<LogIn />} />
-      <Route path="images" element={<Images />} />
+      <Route path="/" element={<LogIn />} />
+      <Route path="images" element={
+        <ProtectedRoute>
+          <Images/>
+        </ProtectedRoute>
+      } />
     </Routes>
   </BrowserRouter>
 );

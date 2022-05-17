@@ -24,7 +24,10 @@ export const Images: React.FC = () => {
     const navigate = useNavigate()
 
     const fetchImages = async () => {
-        const { data } = await axios.get<Response[]>('http://localhost:5000/images')
+        const basic = localStorage.getItem('basic')
+        const { data } = await axios.get<Response[]>('/images?q=proxy', {
+            headers: {'Authorization': 'Basic '+ basic}
+        })
         setImages(data)
     }
 
@@ -46,7 +49,7 @@ export const Images: React.FC = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('basic')
-        navigate('/login')
+        navigate('/')
     }
 
     useEffect(() => {
