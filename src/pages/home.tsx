@@ -1,4 +1,4 @@
-import { Button, Tooltip } from 'antd';
+import { Button } from 'antd';
 import logo from '../assets/cctv.png'
 import hero from '../assets/hero.svg'
 
